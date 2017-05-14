@@ -1,4 +1,4 @@
-import Util, imdb
+import Util
 from RecommenderSystem import RecommenderSystem
 from SentimentNetwork import SentimentNetwork
 PATH = 'dataset-movielens/'
@@ -22,7 +22,7 @@ if __name__ == '__main__':
                                           learning_rate=0.1)
 
     print("Training the neural net")
-    sentiment_analysis.train(reviews[:-1000], labels[:-1000])
+    sentiment_analysis.train(reviews[:-10000], labels[:-10000])
 
     ## Setting up the Recommender System Environment
 
@@ -37,19 +37,28 @@ if __name__ == '__main__':
 
     ## Getting info from imdb api
 
-    example = "http://www.imdb.com/title/tt0113189/"
-    example = example.replace("http://www.imdb.com/title/tt", "")
-    example = example.replace("/", "")
+    print("Getting ids")
+    imdb_ids = Util.get_imdb_id_for(movies_url)
 
-    imdb_access = imdb.IMDb()
-    result = imdb_access.get_movie(example)
+    print("Getting info from api")
+    response = Util.get_title_plot(imdb_ids)
 
-    title = result['canonical title']
-    plot = result['plot']
+    print response
 
     ## sentiment analysis ##
 
-    sentiment_analysis.run(plot)
+    final_recomendation = []
+
+    for movie in response.keys():
+        sentiment = sentiment_analysis.run(response[movie])
+
+        if sentiment == 'POSITIVE':
+            final_recomendation.append(movie)
+
+    print("Recommended movies based in similarity and plot sentiment: ")
+    for m in final_recomendation:
+        print(m)
+
 
 
 
