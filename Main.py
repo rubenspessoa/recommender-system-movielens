@@ -1,9 +1,7 @@
 import pandas as pd
-import numpy as np
 import Util
-
-from RecommenderSystems import RecommenderSystems
-from sklearn.metrics.pairwise import pairwise_distances
+from RecommenderSystem import RecommenderSystem
+import imdb
 
 PATH = 'dataset-movielens/'
 
@@ -12,41 +10,36 @@ if __name__ == '__main__':
 
     train_data, test_data = Util.read_data_from_csv(PATH, 'ua.base', 'ua.test')
 
-    recommender = RecommenderSystems()
+    recommender = RecommenderSystem(train_data, test_data, PATH)
 
-    train_data_matrix, test_data_matrix = Util.create_user_item_matrices(train_data, test_data, PATH)
-    print train_data_matrix
+    movies_url = recommender.get_movies_url_for_user_prediction(user_id=1)
 
-    user_similarity = pairwise_distances(train_data_matrix, metric='cosine')
-    item_similarity = pairwise_distances(train_data_matrix.T, metric='cosine')
+    print movies_url
 
-    item_prediction = recommender.predict(train_data_matrix, item_similarity, 'item')
-    user_prediction = recommender.predict(train_data_matrix, user_similarity, 'user')
 
-    user_id_2predict = 1
-    user_recommendation = {}
+    ## access link in internet
+    ## parse url to get id
+    example = "http://www.imdb.com/title/tt0113189/"
 
-    for enum, rate in enumerate(user_prediction[user_id_2predict]):
-        if rate >= 1:
-            movie_id = enum + 1
-            user_recommendation[movie_id] = rate
+    example = example.replace("http://www.imdb.com/title/tt", "")
+    example = example.replace("/", "")
 
-    print user_recommendation
+    print example
 
-    i_cols = ['movie id', 'movie title', 'release date', 'video release date', 'IMDb URL', 'unknown', 'Action',
-              'Adventure',
-              'Animation', 'Children\'s', 'Comedy', 'Crime', 'Documentary', 'Drama', 'Fantasy',
-              'Film-Noir', 'Horror', 'Musical', 'Mystery', 'Romance', 'Sci-Fi', 'Thriller', 'War', 'Western']
-    items = pd.read_csv(PATH + 'u.item', sep='|', names=i_cols,
-                        encoding='latin-1')
+    imdb_access = imdb.IMDb()
+    result = imdb_access.get_movie(example)
+    print result['canonical title']
+    print result['plot']
 
-    recommended_movies_url = []
+    #plot outline
+    #plot
 
-    for line in items.itertuples():
-        if line[0] in user_recommendation.keys():
-            recommended_movies_url.append(line[5])
 
-    print recommended_movies_url
+
+
+
+
+
 
     ## sentiment analysis ##
 
