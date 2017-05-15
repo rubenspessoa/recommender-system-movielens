@@ -8,7 +8,8 @@ if __name__ == '__main__':
 
     ## Setting up the Sentiment Analysis Environment
 
-    print("Reading dataset for Sentiment Analysis Setup")
+    print("1 - Reading dataset for Sentiment Analysis Setup")
+
     g = open('dataset-sa/reviews.txt', 'r')
     reviews = list(map(lambda x: x[:-1], g.readlines()))
     g.close()
@@ -17,36 +18,27 @@ if __name__ == '__main__':
     labels = list(map(lambda x: x[:-1].upper(), g.readlines()))
     g.close()
 
-    print("Creating sentiment analysis")
+    print("2 - Creating Sentiment Analysis Class")
     sentiment_analysis = SentimentNetwork(reviews[:-1000], labels[:-1000], polarity_cutoff=0.8, min_count=20,
                                           learning_rate=0.1)
 
-    print("Training the neural net")
+    print("3 - Training the neural net")
     sentiment_analysis.train(reviews[:-10000], labels[:-10000])
 
-    ## Setting up the Recommender System Environment
-
-    print("Reading dataset for Recommender System Setup")
+    print("4 - Reading dataset for Recommender System Setup")
     train_data, test_data = Util.read_data_from_csv(PATH, 'ua.base', 'ua.test')
 
-    print("Creating recommender system")
+    print("5 - Creating Recommender System Class")
     recommender = RecommenderSystem(train_data, test_data, PATH)
 
-    print("Getting recommendation")
+    print("6 - Getting recommendation for a given user_id")
     movies_url = recommender.get_movies_url_for_user_prediction(user_id=1)
 
-    ## Getting info from imdb api
-
-    print("Getting ids")
+    print("7 - Getting movie info from IMDb API")
     imdb_ids = Util.get_imdb_id_for(movies_url)
-
-    print("Getting info from api")
     response = Util.get_title_plot(imdb_ids)
 
-    print response
-
-    ## sentiment analysis ##
-
+    print("8 - Perform Sentiment Analysis on plots")
     final_recomendation = []
 
     for movie in response.keys():

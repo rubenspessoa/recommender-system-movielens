@@ -21,13 +21,10 @@ def get_imdb_id_for(movies_url):
 
     for url in movies_url:
         try:
-            print unicode(url)
             response = urllib2.urlopen(unicode(url))
             new_url = response.geturl()
-            print new_url
             new_url = new_url.replace("http://www.imdb.com/title/tt", "")
             new_url = new_url.replace("/", "")
-            print new_url
 
             try:
                 id = int(new_url)
@@ -36,7 +33,7 @@ def get_imdb_id_for(movies_url):
                 pass
 
         except URLError as e:
-            print e.message
+            pass
 
     return imdb_ids
 
